@@ -1,0 +1,174 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2706
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;\f2\fswiss\fcharset0 Helvetica-Oblique;
+}
+{\colortbl;\red255\green255\blue255;\red127\green0\blue85;\red42\green0\blue255;\red63\green127\blue95;
+\red0\green80\blue50;\red0\green0\blue192;}
+{\*\expandedcolortbl;;\csgenericrgb\c49804\c0\c33333;\csgenericrgb\c16471\c0\c100000;\csgenericrgb\c24706\c49804\c37255;
+\csgenericrgb\c0\c31373\c19608;\csgenericrgb\c0\c0\c75294;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww29200\viewh18400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs20 \cf2 #include
+\f1\b0 \cf0  \cf3 "stm32f4xx.h"\cf0 \
+
+\f0\b \cf2 #include
+\f1\b0 \cf0  \cf3 "stm32f4_discovery.h"\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf4 /* Private macro */\cf0 \
+\cf4 /* Private variables */\cf0 \
+\cf4 /* Private function prototypes */\cf0 \
+\cf4 /* Private functions */\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf5 GPIO_InitTypeDef\cf0  GPIO_InitStruct;\
+\cf5 EXTI_InitTypeDef\cf0  EXTI_InitStruct;\
+\cf5 NVIC_InitTypeDef\cf0  NVIC_InitStruct;\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf2 void
+\f1\b0 \cf0  
+\f0\b GPIO_Config
+\f1\b0 ()\
+\{\
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, 
+\f2\i \cf6 ENABLE
+\f1\i0 \cf0 );\
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, 
+\f2\i \cf6 ENABLE
+\f1\i0 \cf0 );\
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, 
+\f2\i \cf6 ENABLE
+\f1\i0 \cf0 );\
+\
+	GPIO_InitStruct.\cf6 GPIO_Mode\cf0  = 
+\f2\i \cf6 GPIO_Mode_OUT
+\f1\i0 \cf0 ;\
+	GPIO_InitStruct.\cf6 GPIO_Pin\cf0  = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;\
+	GPIO_InitStruct.\cf6 GPIO_OType\cf0  = 
+\f2\i \cf6 GPIO_OType_PP
+\f1\i0 \cf0 ;\
+	GPIO_InitStruct.\cf6 GPIO_PuPd\cf0  = 
+\f2\i \cf6 GPIO_PuPd_NOPULL
+\f1\i0 \cf0 ;\
+	GPIO_InitStruct.\cf6 GPIO_Speed\cf0  = 
+\f2\i \cf6 GPIO_Speed_100MHz
+\f1\i0 \cf0 ;\
+\
+	GPIO_Init(GPIOD, &GPIO_InitStruct);\
+\
+	GPIO_InitStruct.\cf6 GPIO_Mode\cf0  = 
+\f2\i \cf6 GPIO_Mode_IN
+\f1\i0 \cf0 ;\
+	GPIO_InitStruct.\cf6 GPIO_Pin\cf0  = GPIO_Pin_0;\
+	GPIO_InitStruct.\cf6 GPIO_OType\cf0  = 
+\f2\i \cf6 GPIO_OType_PP
+\f1\i0 \cf0 ;\
+	GPIO_InitStruct.\cf6 GPIO_PuPd\cf0  = 
+\f2\i \cf6 GPIO_PuPd_DOWN
+\f1\i0 \cf0 ;\
+	GPIO_InitStruct.\cf6 GPIO_Speed\cf0  = 
+\f2\i \cf6 GPIO_Speed_100MHz
+\f1\i0 \cf0 ;\
+\
+	GPIO_Init(GPIOA, &GPIO_InitStruct);\
+\
+\}\
+\
+\
+
+\f0\b \cf2 void
+\f1\b0 \cf0  
+\f0\b delay
+\f1\b0 (\cf5 uint32_t\cf0  time)\{\
+	
+\f0\b \cf2 while
+\f1\b0 \cf0 (time--);\
+\}\
+\
+
+\f0\b \cf2 void
+\f1\b0 \cf0  
+\f0\b EXTI_Config
+\f1\b0 ()\{\
+\
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, 
+\f2\i \cf6 ENABLE
+\f1\i0 \cf0 );\
+\
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, GPIO_PinSource0);\
+\
+		EXTI_InitStruct.\cf6 EXTI_Line\cf0  = EXTI_Line0;\
+		EXTI_InitStruct.\cf6 EXTI_LineCmd\cf0  = 
+\f2\i \cf6 ENABLE
+\f1\i0 \cf0 ;\
+		EXTI_InitStruct.\cf6 EXTI_Mode\cf0  = 
+\f2\i \cf6 EXTI_Mode_Interrupt
+\f1\i0 \cf0 ;\
+		EXTI_InitStruct.\cf6 EXTI_Trigger\cf0  = 
+\f2\i \cf6 EXTI_Trigger_Rising
+\f1\i0 \cf0 ;\
+\
+		EXTI_Init(&EXTI_InitStruct);\
+\
+		NVIC_InitStruct.\cf6 NVIC_IRQChannel\cf0  = 
+\f2\i \cf6 EXTI0_IRQn
+\f1\i0 \cf0 ;\
+		NVIC_InitStruct.\cf6 NVIC_IRQChannelCmd\cf0  = 
+\f2\i \cf6 ENABLE
+\f1\i0 \cf0 ;\
+		NVIC_InitStruct.\cf6 NVIC_IRQChannelPreemptionPriority\cf0  = 0xFF;\
+		NVIC_InitStruct.\cf6 NVIC_IRQChannelSubPriority\cf0  = 0x00;\
+\
+		NVIC_Init(&NVIC_InitStruct);\
+\
+\}\
+\
+
+\f0\b \cf2 void
+\f1\b0 \cf0  
+\f0\b EXTI0_IRQHandler
+\f1\b0 ()\
+\{\
+	
+\f0\b \cf2 if
+\f1\b0 \cf0 (EXTI_GetITStatus(EXTI_Line0) !=
+\f2\i \cf6 RESET
+\f1\i0 \cf0 )\{\
+		GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);\
+		delay(1680000);\
+		GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);\
+		delay(1680000);\
+		GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);\
+		delay(1680000);\
+		GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);\
+		delay(1680000);\
+		GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);\
+		delay(1680000);\
+\
+		EXTI_ClearITPendingBit(EXTI_Line0);\
+\
+	\}\
+\}\
+\
+
+\f0\b \cf2 int
+\f1\b0 \cf0  
+\f0\b main
+\f1\b0 (
+\f0\b \cf2 void
+\f1\b0 \cf0 )\
+\{\
+	GPIO_Config();\
+	EXTI_Config();\
+  
+\f0\b \cf2 while
+\f1\b0 \cf0  (1)\
+  \{\
+	  GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);\
+\
+  \}\
+\}\
+}
